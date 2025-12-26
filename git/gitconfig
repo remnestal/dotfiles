@@ -1,0 +1,5 @@
+[user]
+	name = Albin Remnestål
+	email = albin.remnestal+git@gmail.com
+[init]
+	defaultBranch = main

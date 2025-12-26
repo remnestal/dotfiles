@@ -1,0 +1,12 @@
+ZSH_DIR="$(dirname "$(realpath "${(%):-%N}")")"
+
+source_file() {
+  [ -f "$1" ] && source "$1" || echo "Skipping $1 (not found)"
+}
+
+source_file "$ZSH_DIR/prompt.zsh"
+source_file "$ZSH_DIR/aliases.zsh"
+
+for f in "$ZSH_DIR"/functions/*.zsh; do
+  [ -f "$f" ] && source_file "$f"
+done

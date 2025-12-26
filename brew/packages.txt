@@ -1,0 +1,12 @@
+awscli
+coreutils
+git
+go-task
+golangci-lint
+kubectl
+kustomize
+podman
+pulumi
+sqlcipher
+terraform
+terragrunt
