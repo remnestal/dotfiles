@@ -41,17 +41,20 @@ gap() {
   # Handle untracked files
   for file in $(git ls-files --others --exclude-standard -- "$@"); do
     while true; do
-      read -k 1 "reply?Add '$file'? [y/n]: "
-      echo  # move to a new line after keypress
-
-      if [[ $reply =~ ^[Yy]$ ]]; then
-        git add "$file"
-        break
-      elif [[ $reply =~ ^[Nn]$ ]]; then
-        break
-      else
-        echo "Please answer y or n."
-      fi
+      printf "Add '%s'? [y/n] " "$file"
+      read -r reply </dev/tty
+      case "$reply" in
+        y|Y)
+          git add "$file"
+          break
+          ;;
+        n|N)
+          break
+          ;;
+        *)
+          echo "Please answer y or n."
+          ;;
+      esac
     done
   done
   git status
