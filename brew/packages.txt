@@ -3,8 +3,10 @@ coreutils
 git
 go-task
 golangci-lint
+gpg
 kubectl
 kustomize
+pinentry-mac
 podman
 pulumi
 sqlcipher

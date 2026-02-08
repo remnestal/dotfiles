@@ -23,3 +23,4 @@ prompt_section() {
 prompt_section "Installing Homebrew packages" "./brew/install.sh"
 prompt_section "Setting up symlinks" "./symlinks.sh"
 prompt_section "Setting up SSH keys" "./ssh/setup.sh"
+prompt_section "Setting up GPG keys" "./gpg/setup.sh"
