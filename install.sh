@@ -15,7 +15,6 @@ prompt_section() {
       /bin/sh "$script"
       ;;
     *)
-      echo "Skipped $name"
       ;;
   esac
 }
