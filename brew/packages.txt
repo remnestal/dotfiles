@@ -10,3 +10,4 @@ pulumi
 sqlcipher
 terraform
 terragrunt
+vim

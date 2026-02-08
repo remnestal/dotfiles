@@ -40,3 +40,4 @@ link_file() {
 
 link_file "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc"
 link_file "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig"
+link_file "$DOTFILES_DIR/vi/vimrc" "$HOME/.vimrc"

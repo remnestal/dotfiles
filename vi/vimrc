@@ -1,0 +1,29 @@
+" Basic settings
+set encoding=utf-8
+set number
+set relativenumber
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set autoindent
+set smartindent
+set cursorline
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+" Visual settings
+syntax on
+set background=dark
+
+" Improve performance
+set lazyredraw
+set ttyfast
+
+" Git commit messages
+autocmd FileType gitcommit setlocal textwidth=72
+autocmd FileType gitcommit setlocal spell spelllang=en_us
+autocmd FileType gitcommit setlocal colorcolumn=73
+autocmd BufEnter COMMIT_EDITMSG call cursor(1,1)
