@@ -3,3 +3,5 @@
 	email = albin.remnestal+git@gmail.com
 [init]
 	defaultBranch = main
+[include]
+	path = ~/.gitconfig.local
