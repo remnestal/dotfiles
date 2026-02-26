@@ -1,7 +1,32 @@
 [user]
 	name = Albin Remnestål
 	email = albin.remnestal+git@gmail.com
+[core]
+	editor = vim
 [init]
 	defaultBranch = main
+[push]
+	autoSetupRemote = true
+[pull]
+	rebase = true
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+[commit]
+	verbose = true
+[diff]
+	algorithm = patience
+[merge]
+	conflictstyle = zdiff3
+	ff = no
+[rerere]
+	enabled = true
+[branch]
+	sort = -committerdate
 [include]
 	path = ~/.gitconfig.local
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[url "git@gitlab.com:"]
+	insteadOf = https://gitlab.com/
