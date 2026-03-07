@@ -10,6 +10,7 @@ pinentry-mac
 podman
 pulumi
 sqlcipher
+sshpass
 terraform
 terragrunt
 vim
