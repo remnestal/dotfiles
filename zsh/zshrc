@@ -4,6 +4,8 @@ source_file() {
   [ -f "$1" ] && source "$1" || echo "Skipping $1 (not found)"
 }
 
+export PATH="$HOME/.local/bin:$PATH"
+
 source_file "$ZSH_DIR/prompt.zsh"
 source_file "$ZSH_DIR/aliases.zsh"
 
