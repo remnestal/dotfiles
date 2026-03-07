@@ -29,7 +29,7 @@ gd() {
 
 # Git add 
 ga() {
-  git add "$@"
+  git add "${@:-.}"
   git status
 }
 
