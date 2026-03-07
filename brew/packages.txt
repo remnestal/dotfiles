@@ -13,4 +13,6 @@ sqlcipher
 sshpass
 terraform
 terragrunt
+tree
 vim
+watch
