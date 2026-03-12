@@ -27,7 +27,12 @@ gd() {
   git diff "$@"
 }
 
-# Git add 
+# Git diff staged changes
+gsd() {
+  git diff --staged "$@"
+}
+
+# Git add
 ga() {
   git add "${@:-.}"
   git status
