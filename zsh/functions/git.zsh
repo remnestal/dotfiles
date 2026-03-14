@@ -19,7 +19,7 @@ gp() {
 
 # Git log with custom formatting
 gl() {
-  git log --pretty=format:'%C(blue)%h %C(yellow)%ad %C(white)(%G?) %C(blue)%an %C(white)%s' --date=short "$@"
+  git log --graph --pretty=format:'%C(blue)%h %C(yellow)%ad %C(white)(%G?) %C(blue)%an %C(white)%s' --date=short "$@"
 }
 
 # Git diff
