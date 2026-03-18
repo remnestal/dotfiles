@@ -1,5 +1,6 @@
 awscli
 coreutils
+eksctl
 git
 go-task
 golangci-lint
