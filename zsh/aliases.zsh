@@ -1,3 +1,4 @@
+alias v='vim'
 alias g='git'
 alias kc='kubectl'
 alias kz='kustomize'
