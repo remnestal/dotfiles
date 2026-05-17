@@ -1,7 +1,9 @@
 awscli
 coreutils
 eksctl
+gh
 git
+glow
 go-task
 golangci-lint
 gpg
