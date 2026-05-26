@@ -7,6 +7,7 @@ glow
 go-task
 golangci-lint
 gpg
+iterm2
 kubectl
 kustomize
 pinentry-mac
