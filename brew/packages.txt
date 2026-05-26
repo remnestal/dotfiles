@@ -1,6 +1,7 @@
 awscli
 coreutils
 eksctl
+font-fira-code
 gh
 git
 glow
