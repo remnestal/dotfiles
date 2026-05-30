@@ -3,6 +3,7 @@ coreutils
 eksctl
 font-fira-code
 gh
+glab
 git
 glow
 go-task
