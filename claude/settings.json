@@ -1,13 +1,13 @@
 {
-  "model": "opus",
-  "effortLevel": "high",
-  "advisorModel": "opus",
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
-  },
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.py",
     "refreshInterval": 10
-  }
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "advisorModel": "opus"
 }
