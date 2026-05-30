@@ -44,5 +44,4 @@ link_file "$DOTFILES_DIR/git/gitconfig.local" "$HOME/.gitconfig.local"
 link_file "$DOTFILES_DIR/vi/vimrc" "$HOME/.vimrc"
 
 mkdir -p "$HOME/.claude"
-link_file "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 link_file "$DOTFILES_DIR/claude/statusline.py" "$HOME/.claude/statusline.py"
