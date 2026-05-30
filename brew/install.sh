@@ -1,7 +1,11 @@
 #!/usr/bin/env sh
 
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
 echo_brew() {
-  echo "[BREW] $@"
+  printf "[BREW] $@\n"
 }
 
 BREW_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -18,9 +22,25 @@ if [ -f "$PACKAGES" ]; then
     case "$pkg" in \#*) continue ;; esac
     if brew list "$pkg" >/dev/null 2>&1; then
       echo_brew "✓ $pkg (already installed)"
-    else
-      echo_brew "→ Installing $pkg..."
-      brew install "$pkg" </dev/null
+      continue
     fi
+    while true; do
+      printf "[BREW] Install %s? [y/n] " "$pkg"
+      read -r -s -n1 reply </dev/tty
+      case "$reply" in
+        y|Y)
+          printf "y ${GREEN}→ yes${RESET}\n"
+          brew install "$pkg" </dev/null
+          break
+          ;;
+        n|N)
+          printf "n ${RED}→ no${RESET}\n"
+          break
+          ;;
+        *)
+          printf "\n"
+          ;;
+      esac
+    done
   done < "$PACKAGES"
 fi
