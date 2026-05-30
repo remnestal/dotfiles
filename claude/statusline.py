@@ -14,7 +14,7 @@ FILL, EMPTY, W = "●", "○", 10           # dot bar
 
 def bar(label, pct, color, text=None):
     pct = max(0.0, min(100.0, pct))
-    filled = round(pct * W / 100)
+    filled = int(pct * W / 100)  # round down to nearest 10%
     value = text if text is not None else f"{int(round(pct))}%"
     return f"{DIM}{label}{RESET} {color}{FILL * filled}{RESET}{DIM}{EMPTY * (W - filled)}{RESET} {color}{value}{RESET}"
 
