@@ -16,7 +16,7 @@ def bar(label, pct, color, text=None):
     pct = max(0.0, min(100.0, pct))
     filled = round(pct * W / 100)
     value = text if text is not None else f"{int(round(pct))}%"
-    return f"{DIM}{label}{RESET} {color}{FILL * filled}{EMPTY * (W - filled)} {value}{RESET}"
+    return f"{DIM}{label}{RESET} {color}{FILL * filled}{RESET}{DIM}{EMPTY * (W - filled)}{RESET} {color}{value}{RESET}"
 
 def fmt_tokens(n):
     n = int(n)
