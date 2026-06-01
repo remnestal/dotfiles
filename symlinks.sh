@@ -1,11 +1,6 @@
-#!/usr/bin/env sh
-set -u
-
-echo_symlinks() {
-  echo "[SYMLINKS] $@"
-}
-
-DOTFILES_DIR="$(grealpath "$(dirname "$0")")"
+#!/usr/bin/env bash
+. "$(dirname "$0")/common.sh"
+LOG_TAG="SYMLINKS"
 
 link_file() {
   src="$1"
@@ -14,28 +9,22 @@ link_file() {
   if [ -L "$dest" ]; then
     target="$(readlink "$dest")"
     if [ "$target" = "$src" ]; then
-      echo_symlinks "✓ Skipping $dest (already linked)"
-      return
+      log_ok "$dest (already linked)"
     else
-      echo_symlinks "✓ Skipping $dest (symlink points to $target, not $src)"
-      return
+      log_ok "$dest (symlink points to $target, not $src)"
     fi
+    return
   elif [ -e "$dest" ]; then
-    echo_symlinks "$dest (file exists, not a symlink)"
+    log "$dest (file exists, not a symlink)"
     return
   fi
 
-  printf "[SYMLINKS] Create symlink for %s? [y/n] " "$dest"
-  read -r answer
-  case "$answer" in
-    y|Y)
-      ln -s "$src" "$dest"
-      echo_symlinks "→ Linked $dest → $src"
-      ;;
-    *)
-      echo_symlinks "✓ Skipped $dest"
-      ;;
-  esac
+  if prompt_yn "Create symlink for $dest?"; then
+    ln -s "$src" "$dest"
+    log_act "Linked $dest → $src"
+  else
+    log_skip "$dest"
+  fi
 }
 
 link_file "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc"

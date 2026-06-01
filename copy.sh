@@ -1,11 +1,6 @@
-#!/usr/bin/env sh
-set -u
-
-echo_copy() {
-  echo "[COPY] $@"
-}
-
-DOTFILES_DIR="$(grealpath "$(dirname "$0")")"
+#!/usr/bin/env bash
+. "$(dirname "$0")/common.sh"
+LOG_TAG="COPY"
 
 copy_file() {
   src="$1"
@@ -14,36 +9,36 @@ copy_file() {
   if [ -L "$dest" ]; then
     if cmp -s "$src" "$dest"; then
       rm "$dest" && cp "$src" "$dest"
-      echo_copy "→ $dest (converted symlink to copy)"
+      log_act "$dest (converted symlink to copy)"
       return
     fi
     git diff --no-index --color "$dest" "$src" || true
-    printf "[COPY] Replace symlink %s with repo version? [y/n] " "$dest"
-    read -r answer </dev/tty
-    case "$answer" in
-      y|Y) rm "$dest" && cp "$src" "$dest"; echo_copy "→ Updated $dest" ;;
-      *) echo_copy "✓ Skipped $dest" ;;
-    esac
+    if prompt_yn "Replace symlink $dest with repo version?"; then
+      rm "$dest" && cp "$src" "$dest"
+      log_act "Updated $dest"
+    else
+      log_skip "$dest"
+    fi
     return
   fi
 
   if [ -e "$dest" ]; then
     if cmp -s "$src" "$dest"; then
-      echo_copy "✓ $dest (up to date)"
+      log_ok "$dest (up to date)"
       return
     fi
     git diff --no-index --color "$dest" "$src" || true
-    printf "[COPY] Overwrite %s? [y/n] " "$dest"
-    read -r answer </dev/tty
-    case "$answer" in
-      y|Y) cp "$src" "$dest"; echo_copy "→ Updated $dest" ;;
-      *) echo_copy "✓ Skipped $dest" ;;
-    esac
+    if prompt_yn "Overwrite $dest?"; then
+      cp "$src" "$dest"
+      log_act "Updated $dest"
+    else
+      log_skip "$dest"
+    fi
     return
   fi
 
   cp "$src" "$dest"
-  echo_copy "→ Copied $dest"
+  log_act "Copied $dest"
 }
 
 mkdir -p "$HOME/.claude"
