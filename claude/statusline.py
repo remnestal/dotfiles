@@ -10,7 +10,7 @@ RESET = "\x1b[0m"; BOLD = "\x1b[1m"; DIM = "\x1b[2m"
 BLUE = "\x1b[34m"; GREEN = "\x1b[32m"; YELLOW = "\x1b[33m"
 ORANGE = "\x1b[38;5;208m"; RED = "\x1b[31m"  # orange needs 256-color (not 8-color ANSI)
 
-FILL, EMPTY, W = "●", "○", 10           # dot bar
+FILL, EMPTY, W = "▰", "▱", 10           # slanted rectangle bar
 
 def bar(label, pct, color, text=None):
     pct = max(0.0, min(100.0, pct))
