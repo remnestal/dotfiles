@@ -10,6 +10,7 @@ glow
 go-task
 golangci-lint
 gpg
+helm
 iterm2
 kubectl
 kustomize
@@ -23,3 +24,4 @@ terragrunt
 tree
 vim
 watch
+yq
