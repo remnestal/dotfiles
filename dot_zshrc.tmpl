@@ -1,0 +1,30 @@
+# Managed by chezmoi. Edit dot_zshrc.tmpl in the source dir, not this file.
+
+{{ if eq .chezmoi.os "darwin" -}}
+# Homebrew (Apple Silicon vs Intel prefix)
+
+{{   if eq .chezmoi.arch "arm64" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{   else -}}
+eval "$(/usr/local/bin/brew shellenv)"
+{{   end }}
+{{ end -}}
+# Scripts
+
+# Two passes, each sorted on its own, so the numeric prefixes only have to be
+# consistent within a directory:
+#
+#   1. ~/.zsh/                       this repo
+#   2. ~/.local/share/dotfiles/zsh/  optional overlay, cloned by hand
+#
+# The overlay runs last and can override anything above it. Missing directories
+# expand to nothing thanks to the (N) glob qualifier.
+
+for _zsh_file in \
+  "$HOME"/.zsh/*.zsh(N) \
+  "$HOME"/.local/share/dotfiles/zsh/*.zsh(N)
+do
+  source "$_zsh_file"
+done
+
+unset _zsh_file

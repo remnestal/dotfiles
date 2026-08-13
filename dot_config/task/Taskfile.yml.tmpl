@@ -1,0 +1,73 @@
+# Managed by chezmoi. Run through the `gitkeys` wrapper (dot_zsh/40-gitkeys.zsh).
+#
+# Scope: the one SSH key git uses for push/pull and commit signing. Other keys
+# are yours to make with ssh-keygen.
+#
+# Auth is not wrapped. If gh/glab is not logged in, they say so themselves --
+# that output is the error message, and it is better than anything restated
+# here. Same for duplicate keys and missing scopes.
+#
+# Forge selection is baked in at `chezmoi apply` from the init prompts, so
+# there are no `command -v glab` checks at runtime.
+
+version: "3"
+
+tasks:
+  status:
+    desc: Show agent and forge key state
+    cmds:
+      - ssh-add -l || true
+{{- if .github }}
+      - gh ssh-key list
+{{- end }}
+{{- if .gitlab }}
+      - glab ssh-key list
+{{- end }}
+
+  keygen:
+    desc: Generate the git SSH key (prompts for a passphrase)
+    status:
+      - test -f ~/.ssh/id_git
+    cmds:
+      - ssh-keygen -t ed25519 -C "git@$(hostname -s)" -f ~/.ssh/id_git
+
+  login:
+    desc: Unlock the key for 8 hours
+    cmds:
+      - ssh-add -t 8h ~/.ssh/id_git
+
+  logout:
+    desc: Drop the key from the agent now
+    cmds:
+      - ssh-add -d ~/.ssh/id_git
+
+  trust:
+    desc: Trust your own key so `git log --show-signature` can verify it
+    status:
+      - grep -qF "$(cat ~/.ssh/id_git.pub)" ~/.config/git/allowed_signers
+    cmds:
+      - mkdir -p ~/.config/git
+      - echo "$(git config --get user.email) $(cat ~/.ssh/id_git.pub)" >> ~/.config/git/allowed_signers
+
+  register:
+    desc: Upload the public key to the configured forges
+{{- if or .github .gitlab }}
+    cmds:
+{{- if .github }}
+      - gh ssh-key add ~/.ssh/id_git.pub --type authentication --title "$(hostname -s)"
+      - gh ssh-key add ~/.ssh/id_git.pub --type signing --title "$(hostname -s)"
+{{- end }}
+{{- if .gitlab }}
+      - glab ssh-key add ~/.ssh/id_git.pub --title "$(hostname -s)"
+{{- end }}
+{{- else }}
+    cmds:
+      - echo "no forge configured -- re-run chezmoi init --prompt"
+{{- end }}
+
+  setup:
+    desc: Generate, register and trust the key
+    cmds:
+      - task: keygen
+      - task: register
+      - task: trust

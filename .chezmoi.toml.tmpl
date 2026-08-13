@@ -1,0 +1,10 @@
+{{- $github := promptBoolOnce . "github" "Use GitHub" true -}}
+{{- $gitlab := promptBoolOnce . "gitlab" "Use GitLab" false -}}
+
+# Written once by `chezmoi init` to ~/.config/chezmoi/chezmoi.toml, which is
+# machine-local and never committed. Answers are durable: re-running init does
+# not re-ask. Use `chezmoi init --prompt` to change them.
+
+[data]
+    github = {{ $github }}
+    gitlab = {{ $gitlab }}

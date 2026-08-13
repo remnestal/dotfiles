@@ -1,2 +1,2 @@
-# Local git configuration (machine-specific, not tracked)
-gitconfig.local
+# Claude Code per-directory permission grants, machine-local.
+.claude/settings.local.json

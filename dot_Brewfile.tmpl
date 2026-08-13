@@ -1,0 +1,51 @@
+# Managed by chezmoi. Edit dot_Brewfile.tmpl in the source dir, not this file.
+#
+#   brew bundle install --global    install everything below
+#   brew bundle check --global      report what is missing
+#   brew bundle cleanup --global    uninstall anything NOT listed below
+#
+# Names are canonical, not aliases: gnupg (not gpg), kubernetes-cli (not
+# kubectl). Aliases work with `brew install` but not in a Brewfile.
+
+brew "coreutils"
+brew "git"
+brew "glow"
+brew "go-task"
+brew "golangci-lint"
+brew "jless"
+brew "jq"
+brew "podman"
+brew "sqlcipher"
+brew "sshpass"
+brew "tree"
+brew "vim"
+brew "watch"
+brew "yq"
+
+cask "font-fira-code"
+cask "iterm2"
+{{ if or .github .gitlab }}
+# Forge CLIs, chosen once at `chezmoi init`. The same answers gate SSH and GPG
+# key registration later.
+
+{{ if .github -}}
+brew "gh"
+{{ end -}}
+{{ if .gitlab -}}
+brew "glab"
+{{ end -}}
+{{ end }}
+# Overlay: private repos cloned by hand, absent on personal machines.
+#
+# A Brewfile is Ruby, so overlays are evaluated inline rather than run as
+# separate `brew bundle` invocations. That matters for cleanup: it only ever
+# sees one file, so the union has to live in one file or cleanup would
+# uninstall everything the overlays add. Packages merge as a set union -- there
+# is no override, and a package listed twice is installed once.
+#
+# Every ~/.local/share/dotfiles/brew/*.Brewfile is loaded, in sorted order, so
+# groupings can be separate files: infra.Brewfile, work.Brewfile, and so on.
+
+Dir[File.expand_path("~/.local/share/dotfiles/brew/{Brewfile,*.Brewfile}")].sort.each do |f|
+  instance_eval(File.read(f), f)
+end

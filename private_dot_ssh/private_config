@@ -1,0 +1,14 @@
+# Managed by chezmoi.
+#
+# id_git is not a default key name, so ssh only offers it for hosts named here.
+# Both forges are listed unconditionally, matching the insteadOf rewrites in
+# ~/.gitconfig.
+#
+# Include stays at the top: directives after a Host line belong to that block,
+# and ssh takes the first value it finds, so config.local overrides these.
+
+Include ~/.ssh/config.local
+
+Host github.com gitlab.com
+	IdentityFile ~/.ssh/id_git
+	IdentitiesOnly yes

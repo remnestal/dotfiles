@@ -1,9 +1,12 @@
+# Prompt
 
-function preexec() {
+autoload -Uz add-zsh-hook
+
+_prompt_preexec() {
   timer=$SECONDS
 }
 
-function precmd() {
+_prompt_precmd() {
   local exit_code=$?
   local status_text=""
   local timer_text=""
@@ -43,3 +46,6 @@ function precmd() {
   PROMPT="%B${path_color}${path}%f ${status_text}%b "
   RPROMPT="(${exit_code}) %B%F{yellow}%D %*%f%b ${timer_text}"
 }
+
+add-zsh-hook preexec _prompt_preexec
+add-zsh-hook precmd _prompt_precmd

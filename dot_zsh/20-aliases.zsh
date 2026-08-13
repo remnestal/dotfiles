@@ -1,3 +1,5 @@
+# Aliases
+
 alias c='claude'
 alias v='vim'
 alias g='git'

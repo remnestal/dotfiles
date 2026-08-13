@@ -1,15 +1,13 @@
+# Git functions
+
 # Git status
 gs() {
   git status
 }
 
-# Git commit with default signing key if set
+# Git commit. Signing is handled by commit.gpgsign in ~/.gitconfig.
 gc() {
-  if git config user.signingkey >/dev/null 2>&1; then
-    git commit -S "$@"
-  else
-    git commit "$@"
-  fi
+  git commit "$@"
 }
 
 # Git pull

@@ -1,3 +1,5 @@
+" Managed by chezmoi. Edit dot_vimrc in the source dir, not this file.
+
 " Basic settings
 set encoding=utf-8
 set number
@@ -27,3 +29,10 @@ autocmd FileType gitcommit setlocal textwidth=72
 autocmd FileType gitcommit setlocal spell spelllang=en_us
 autocmd FileType gitcommit setlocal colorcolumn=73
 autocmd BufEnter COMMIT_EDITMSG call cursor(1,1)
+
+" Overlay: a private repo cloned by hand, absent on personal machines. Sourced
+" last, in sorted order, so it can override anything above. glob() returns an
+" empty list when the directory does not exist, so absence needs no guard.
+for s:file in glob('~/.local/share/dotfiles/vim/*.vim', 0, 1)
+  execute 'source' fnameescape(s:file)
+endfor
