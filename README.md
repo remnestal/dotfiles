@@ -102,8 +102,6 @@ remembering:
   overlay can add URL rewrites but never remove the ones in `dot_gitconfig`.
 - **git can't glob.** `include.path` takes explicit paths only, so the overlay
   is one fixed file; split it further with its own `[include]` lines.
-- **claude** splits. `CLAUDE.md` ends with an `@~/.local/share/dotfiles/claude/local.md`
-  import, so machine-local guidance is appended last and wins by being most
-  specific -- but the import is one fixed path, like git's, so split further
-  with `@` lines inside the overlay. `settings.json` has no include mechanism
-  and is still managed as a plain file with no overlay.
+- **claude** — only `CLAUDE.md` has an overlay, added at the end. It is text,
+  not config, so nothing really overrides: when two lines disagree, Claude
+  picks. `settings.json` has no overlay at all. See `dot_claude/README.md`.
