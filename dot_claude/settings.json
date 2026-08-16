@@ -1,5 +1,9 @@
 {
+  "permissions": {
+    "defaultMode": "plan"
+  },
   "model": "opus",
+  "autoCompactEnabled": false,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.py",
