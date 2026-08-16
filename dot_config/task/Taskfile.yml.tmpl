@@ -43,8 +43,10 @@ tasks:
 
   trust:
     desc: Trust your own key so `git log --show-signature` can verify it
+    # test -f first: on a fresh machine the file does not exist and a bare grep
+    # would print an error before returning the "not done" we wanted anyway.
     status:
-      - grep -qF "$(cat ~/.ssh/id_git.pub)" ~/.config/git/allowed_signers
+      - test -f ~/.config/git/allowed_signers && grep -qF "$(cat ~/.ssh/id_git.pub)" ~/.config/git/allowed_signers
     cmds:
       - mkdir -p ~/.config/git
       - echo "$(git config --get user.email) $(cat ~/.ssh/id_git.pub)" >> ~/.config/git/allowed_signers
