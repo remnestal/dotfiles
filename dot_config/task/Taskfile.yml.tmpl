@@ -1,3 +1,7 @@
+{{- /* ssh-add spells it 8h, date -v spells it +8H. A chezmoi variable rather
+       than a Taskfile var: chezmoi templates this file first and would eat a
+       {{ .VAR }} meant for task, so the number is baked in at apply time. */ -}}
+{{- $ttl := 8 -}}
 # Managed by chezmoi. Run through the `gitkeys` wrapper (dot_zsh/40-gitkeys.zsh).
 #
 # Scope: the one SSH key git uses for push/pull and commit signing. Other keys
@@ -125,9 +129,12 @@ tasks:
       - ssh-keygen -t ed25519 -C "git@$(hostname -s)" -f ~/.ssh/id_git
 
   login:
-    desc: Unlock the key for 8 hours
+    desc: Unlock the key for {{ $ttl }} hours
     cmds:
-      - ssh-add -t 8h ~/.ssh/id_git
+      - ssh-add -t {{ $ttl }}h ~/.ssh/id_git
+      # ssh-add prints the duration ("Lifetime set to 08:00:00"), never the
+      # wall-clock time it lands on, which is the part you actually want.
+      - echo "Expires at $(date -v+{{ $ttl }}H '+%F %T')"
 
   logout:
     desc: Drop the key from the agent now
