@@ -107,8 +107,12 @@ tasks:
 {{- end }}
 
   setup:
-    desc: Generate, register and trust the key
+    desc: Generate, trust and register the key
+    # Local steps first. trust is offline and cannot fail for network or auth
+    # reasons, so putting it ahead of register means a forge problem leaves you
+    # with a working local signing setup instead of an unverifiable one.
     cmds:
       - task: keygen
-      - task: register
       - task: trust
+      - task: auth
+      - task: register
