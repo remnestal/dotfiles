@@ -19,15 +19,69 @@ version: "3"
 
 tasks:
   status:
-    desc: Show agent and forge key state
+    desc: Report what is set up and what to run next
+    silent: true
+    # One shell block, not one command per check: task runs each cmds entry in
+    # its own shell, so an early `exit` would only end that line's shell and
+    # the rest would still run.
+    #
+    # The checks are the same expressions the tasks guard themselves with, so
+    # the report cannot claim something the task disagrees with.
     cmds:
-      - ssh-add -l || true
-{{- if .github }}
-      - gh ssh-key list
-{{- end }}
-{{- if .gitlab }}
-      - glab ssh-key list
-{{- end }}
+      - |
+        if [ -f ~/.ssh/id_git ]; then
+          echo "key    ~/.ssh/id_git"
+        else
+          echo "key    missing                       -> gitkeys setup"
+        fi
+
+        if ssh-add -l >/dev/null 2>&1; then
+          echo "agent  unlocked"
+        else
+          echo "agent  no identities                 -> gitkeys login"
+        fi
+        {{- if .github }}
+
+        if ! gh auth status >/dev/null 2>&1; then
+          echo "gh     not logged in                 -> gitkeys auth"
+        elif ! gh auth status 2>&1 | grep -q 'admin:ssh_signing_key'; then
+          echo "gh     missing admin:ssh_signing_key -> gitkeys auth"
+        else
+          echo "gh     logged in"
+        fi
+        {{- end }}
+        {{- if .gitlab }}
+
+        if glab auth status >/dev/null 2>&1; then
+          echo "glab   logged in"
+        else
+          echo "glab   not logged in                 -> gitkeys auth"
+        fi
+        {{- end }}
+
+        if [ -f ~/.ssh/id_git.pub ] &&
+           [ -f ~/.config/git/allowed_signers ] &&
+           grep -qF "$(cat ~/.ssh/id_git.pub)" ~/.config/git/allowed_signers; then
+          echo "trust  allowed_signers"
+        else
+          echo "trust  not trusted                   -> gitkeys trust"
+        fi
+
+        # Without a key there is nothing below to list, and asking the forge
+        # about a key that does not exist yet is just noise.
+        [ -f ~/.ssh/id_git ] || exit 0
+        echo
+
+        ssh-add -l || true
+        {{- if .github }}
+        # Tolerant: listing keys warns without admin:ssh_signing_key, and a
+        # status command that fails because of that is worse than useless --
+        # that is the exact thing you ran it to find out.
+        gh ssh-key list || true
+        {{- end }}
+        {{- if .gitlab }}
+        glab ssh-key list || true
+        {{- end }}
 
   auth:
     desc: Log in to the configured forges with the scopes registration needs
