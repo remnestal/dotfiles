@@ -3,9 +3,14 @@
 # Scope: the one SSH key git uses for push/pull and commit signing. Other keys
 # are yours to make with ssh-keygen.
 #
-# Auth is not wrapped. If gh/glab is not logged in, they say so themselves --
-# that output is the error message, and it is better than anything restated
-# here. Same for duplicate keys and missing scopes.
+# Auth IS wrapped, unlike everything else here. Two reasons, both specific to
+# gh: its default OAuth grant lacks admin:ssh_signing_key, so registering the
+# signing key 404s; and its own remedy, `gh auth login`, offers to generate an
+# SSH key -- a second key competing with the one this file owns. Following gh's
+# advice is the wrong move, so its output is not left to stand as the error.
+#
+# Everything else is still unwrapped: duplicate keys, missing glab scopes and
+# ssh-agent complaints say what they say.
 #
 # Forge selection is baked in at `chezmoi apply` from the init prompts, so
 # there are no `command -v glab` checks at runtime.
@@ -22,6 +27,40 @@ tasks:
 {{- end }}
 {{- if .gitlab }}
       - glab ssh-key list
+{{- end }}
+
+  auth:
+    desc: Log in to the configured forges with the scopes registration needs
+{{- if or .github .gitlab }}
+    # gh draws a TUI selector and opens a browser device flow.
+    interactive: true
+    status:
+{{- if .github }}
+      - gh auth status 2>&1 | grep -q 'admin:ssh_signing_key'
+{{- end }}
+{{- if .gitlab }}
+      - glab auth status
+{{- end }}
+    cmds:
+{{- if .github }}
+      # refresh re-scopes an existing login and fails when there is none;
+      # login is the cold path. gh keeps them separate, so we do too.
+      - |
+        if gh auth status >/dev/null 2>&1; then
+          gh auth refresh -h github.com -s admin:public_key -s admin:ssh_signing_key
+        else
+          gh auth login -h github.com -s admin:public_key -s admin:ssh_signing_key
+        fi
+{{- end }}
+{{- if .gitlab }}
+      # No scope refresh: glab authenticates with a PAT, and a PAT cannot be
+      # re-scoped after the fact. An under-scoped token is fixed by minting a
+      # new one, which is glab's story to tell, not ours.
+      - glab auth status >/dev/null 2>&1 || glab auth login
+{{- end }}
+{{- else }}
+    cmds:
+      - echo "no forge configured -- re-run chezmoi init --prompt"
 {{- end }}
 
   keygen:
