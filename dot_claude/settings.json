@@ -1,6 +1,27 @@
 {
   "permissions": {
-    "defaultMode": "plan"
+    "defaultMode": "plan",
+    "allow": [
+      "Bash(go build ./...)",
+      "Bash(go vet ./...)",
+      "Bash(go test ./...)",
+      "Bash(go test -race ./...)",
+      "Bash(go test -count=1 ./...)",
+      "Bash(gofumpt -w .)",
+      "Bash(gofumpt -l .)",
+      "Bash(golangci-lint run ./...)",
+      "Bash(golangci-lint run --fix ./...)",
+      "Bash(govulncheck ./...)",
+      "Bash(go mod tidy)",
+      "Bash(go mod verify)",
+      "Bash(go version)",
+      "Bash(go env)",
+      "Bash(go doc:*)",
+      "Bash(go list:*)"
+    ],
+    "deny": [
+      "Bash(go env -w:*)"
+    ]
   },
   "model": "opus",
   "autoCompactEnabled": false,
