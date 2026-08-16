@@ -26,7 +26,7 @@ answers in `~/.config/chezmoi/chezmoi.toml` (machine-local, not committed).
     dot_gitconfig      -> ~/.gitconfig
     dot_vimrc          -> ~/.vimrc
     dot_Brewfile.tmpl  -> ~/.Brewfile
-    dot_claude/        -> ~/.claude/   (settings, statusline)
+    dot_claude/        -> ~/.claude/   (CLAUDE.md, settings, statusline)
     private_dot_ssh/   -> ~/.ssh/      (forge hosts only)
     dot_config/task/   -> ~/.config/task/Taskfile.yml
 
@@ -73,6 +73,7 @@ missing. Drop files in and they're picked up:
     vim/*.vim          sourced after ~/.vimrc     sorted, last wins
     brew/*.Brewfile    eval'd into ~/.Brewfile    union, no override
     git/gitconfig      included last              last key wins
+    claude/local.md    imported by CLAUDE.md      appended last
 
 The merge models differ per tool, which is the only thing here worth
 remembering:
@@ -86,5 +87,8 @@ remembering:
   overlay can add URL rewrites but never remove the ones in `dot_gitconfig`.
 - **git can't glob.** `include.path` takes explicit paths only, so the overlay
   is one fixed file; split it further with its own `[include]` lines.
-- **claude** has no include mechanism at all. `settings.json` is managed as a
-  plain file with no overlay.
+- **claude** splits. `CLAUDE.md` ends with an `@~/.local/share/dotfiles/claude/local.md`
+  import, so machine-local guidance is appended last and wins by being most
+  specific -- but the import is one fixed path, like git's, so split further
+  with `@` lines inside the overlay. `settings.json` has no include mechanism
+  and is still managed as a plain file with no overlay.
