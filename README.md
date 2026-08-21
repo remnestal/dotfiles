@@ -6,7 +6,7 @@ chezmoi source dir.
 
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     brew install chezmoi
-    chezmoi init --apply remnestal
+    chezmoi init --apply --source=~/projects/dotfiles remnestal
     brew bundle install --global
     exec zsh
     gitkeys setup
@@ -18,6 +18,14 @@ if brew is already there.
 
 `chezmoi init` asks once whether you use GitHub and/or GitLab, and stores the
 answers in `~/.config/chezmoi/chezmoi.toml` (machine-local, not committed).
+
+`--source` is needed on that first run only. The source dir lives at
+`~/projects/dotfiles`, not chezmoi's default `~/.local/share/chezmoi`, and the
+config that records it (`sourceDir`) is itself written by `init` -- so the very
+first command has nothing to read it from and must be told on the command line.
+Every command afterwards picks it up from the config; without it, chezmoi looks
+in the default location and every command fails with `source-dir: no such file
+or directory`.
 
 `chezmoi apply` writes:
 
