@@ -6,7 +6,7 @@ chezmoi source dir.
 
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     brew install chezmoi
-    chezmoi init --apply --source=~/projects/dotfiles remnestal
+    chezmoi init --apply remnestal
     brew bundle install --global
     exec zsh
     gitkeys setup
@@ -19,13 +19,20 @@ if brew is already there.
 `chezmoi init` asks once whether you use GitHub and/or GitLab, and stores the
 answers in `~/.config/chezmoi/chezmoi.toml` (machine-local, not committed).
 
-`--source` is needed on that first run only. The source dir lives at
-`~/projects/dotfiles`, not chezmoi's default `~/.local/share/chezmoi`, and the
-config that records it (`sourceDir`) is itself written by `init` -- so the very
-first command has nothing to read it from and must be told on the command line.
-Every command afterwards picks it up from the config; without it, chezmoi looks
-in the default location and every command fails with `source-dir: no such file
-or directory`.
+There are two clones, deliberately. `~/projects/dotfiles` is the working repo,
+where you edit and commit; `~/.local/share/chezmoi` is chezmoi's own source dir,
+which `chezmoi update` pulls into and applies. So a change takes effect only
+after a push -- which is the point: every change round-trips through the remote,
+so the clone that a new machine depends on is exercised continuously rather than
+first tried on the day it matters.
+
+The cost is that `chezmoi apply` does not see uncommitted work. To try a change
+before pushing it:
+
+    chezmoi apply --source=~/projects/dotfiles
+
+`chezmoi edit` and `chezmoi add` act on the source dir, not the working repo, so
+prefer editing `~/projects/dotfiles` directly.
 
 `chezmoi apply` writes:
 
