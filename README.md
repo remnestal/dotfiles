@@ -52,7 +52,7 @@ for push/pull and commit signing. Nothing runs at init; it is on-demand.
 
     gitkeys status    what is set up, and the command to run next
     gitkeys setup     keygen + trust + auth + register
-    gitkeys login     ssh-add -t 8h   (the key has a passphrase and is not
+    gitkeys login     ssh-add -t 12h  (the key has a passphrase and is not
                       loaded at login, so nothing can sign outside the window)
     gitkeys logout    drop it from the agent now
 
