@@ -33,7 +33,9 @@
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true
   },
-  "append_session_tags": false,
+  "attribution": {
+    "sessionUrl": false
+  },
   "effortLevel": "medium",
   "advisorModel": "opus",
   "tui": "fullscreen"
