@@ -10,6 +10,7 @@ path=(
   "$HOME/.local/bin"
   "$GOPATH/bin"
   $path
+  /usr/local/bin  # last: a no-op if inherited, never shadows anything
 )
 
 # Drop duplicates, and entries that aren't existing directories.
