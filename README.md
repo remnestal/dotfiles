@@ -88,6 +88,7 @@ missing. Drop files in and they're picked up:
     vim/*.vim          sourced after ~/.vimrc     sorted, last wins
     brew/*.Brewfile    eval'd into ~/.Brewfile    union, no override
     git/gitconfig      included last              last key wins
+    ssh/*.conf         included first             sorted, first wins
     claude/local.md    imported by CLAUDE.md      appended last
 
 The merge models differ per tool, which is the only thing here worth
@@ -102,6 +103,9 @@ remembering:
   overlay can add URL rewrites but never remove the ones in `dot_gitconfig`.
 - **git can't glob.** `include.path` takes explicit paths only, so the overlay
   is one fixed file; split it further with its own `[include]` lines.
+- **ssh** — the first value wins, the reverse of zsh/vim. The overlay is
+  included before any `Host` block, so it overrides the base, and among overlay
+  files the lowest prefix wins. Each file can `Include` further files.
 - **claude** — only `CLAUDE.md` has an overlay, added at the end. It is text,
   not config, so nothing really overrides: when two lines disagree, Claude
   picks. `settings.json` has no overlay at all. See `dot_claude/README.md`.
