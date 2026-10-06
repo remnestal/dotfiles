@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Claude Code status line.
-Left → right: pwd (basename) | local HH:MM + UTC offset | model
+Left → right: pwd (basename) | local HH:MM + UTC offset | model + effort pips (threshold color)
               | context bar+tokens (blue) | 5h usage % + reset countdown (threshold color)
 """
 import json, os, sys
@@ -28,6 +28,11 @@ def usage_color(p):
     if p < 90: return ORANGE
     return RED
 
+EFFORT = ["low", "medium", "high", "xhigh", "max"]
+
+def effort_color(level):
+    return {"high": YELLOW, "xhigh": ORANGE, "max": RED}.get(level, GREEN)
+
 def fmt_remaining(secs):
     secs = max(0, int(secs))
     d, rem = divmod(secs, 86400); h, rem = divmod(rem, 3600); m = rem // 60
@@ -51,8 +56,17 @@ def main():
     utc = f"{sign}{oh}" if om == 0 else f"{sign}{oh}:{om:02d}"
     segs.append(f"{BOLD}{now:%H:%M}{RESET} {DIM}UTC{utc}{RESET}")
 
-    # model
-    segs.append(f"{DIM}{data.get('model', {}).get('display_name', '?')}{RESET}")
+    # model + effort pips, low=1 … max=5 (effort is absent when the model
+    # doesn't support it; an unknown level falls back to the plain word)
+    seg = f"{DIM}{data.get('model', {}).get('display_name', '?')}{RESET}"
+    effort = (data.get("effort") or {}).get("level")
+    if effort in EFFORT:
+        n = EFFORT.index(effort) + 1
+        color = effort_color(effort)
+        seg += f" {color}{FILL * n}{RESET}{DIM}{EMPTY * (len(EFFORT) - n)}{RESET}"
+    elif effort:
+        seg += f" {DIM}{effort}{RESET}"
+    segs.append(seg)
 
     # context: blue dot bar (fill from used_percentage) + actual tokens in context.
     # total_input_tokens is the numerator behind used_percentage (input + cache
