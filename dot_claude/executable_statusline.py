@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Claude Code status line.
-Left → right: pwd (basename) | local HH:MM + UTC offset | model + effort pips (threshold color)
+Left → right: agent dot (id_git loaded green / other key yellow / none red) + pwd (basename) | local HH:MM + UTC offset | model + effort pips (threshold color)
               | context bar+tokens (blue) | 5h usage % + reset countdown (threshold color)
 """
-import json, os, sys
+import json, os, subprocess, sys
 from datetime import datetime
 
 RESET = "\x1b[0m"; BOLD = "\x1b[1m"; DIM = "\x1b[2m"
@@ -40,13 +40,31 @@ def fmt_remaining(secs):
     if h: return f"{h}h{m:02d}m"
     return f"{m}m"
 
+def agent_color():
+    # Claude runs this with the same SSH_AUTH_SOCK as its Bash tool, so this is
+    # whether the session can sign with id_git. Match the key blob, not just
+    # "any key loaded", so another identity shows yellow rather than green.
+    try:
+        r = subprocess.run(["ssh-add", "-L"], capture_output=True,
+                           text=True, timeout=1)
+        out = r.stdout if r.returncode == 0 else ""  # 1 = "no identities" text
+    except (OSError, subprocess.SubprocessError):
+        out = ""
+    loaded = {f[1] for f in map(str.split, out.splitlines()) if len(f) > 1}
+    try:
+        with open(os.path.expanduser("~/.ssh/id_git.pub")) as f:
+            if f.read().split()[1] in loaded: return GREEN
+    except (OSError, IndexError):
+        pass
+    return YELLOW if loaded else RED
+
 def main():
     data = json.load(sys.stdin)
 
     # pwd basename, far left (just the current dir name, e.g. "dotfiles")
     cwd = data.get("cwd") or data.get("workspace", {}).get("current_dir", "")
     name = os.path.basename(cwd.rstrip("/")) or cwd or "?"
-    segs = [f"{BOLD}{name}{RESET}"]
+    segs = [f"{agent_color()}●{RESET} {BOLD}{name}{RESET}"]
 
     # clock + UTC offset (handles fractional offsets like +5:30)
     now = datetime.now().astimezone()
