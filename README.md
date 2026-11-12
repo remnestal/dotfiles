@@ -16,7 +16,8 @@ and the Taskfile, `brew bundle` installs the `go-task` and `gh` they need, and
 `exec zsh` is what puts the `gitkeys` function on your path. Skip the first line
 if brew is already there.
 
-`chezmoi init` asks once whether you use GitHub and/or GitLab, and stores the
+`chezmoi init` asks once whether you use GitHub and/or GitLab, and whether to
+clone [albilities](https://github.com/remnestal/albilities), and stores the
 answers in `~/.config/chezmoi/chezmoi.toml` (machine-local, not committed).
 
 There are two clones, deliberately. `~/projects/dotfiles` is the working repo,

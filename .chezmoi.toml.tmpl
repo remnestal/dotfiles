@@ -1,5 +1,6 @@
 {{- $github := promptBoolOnce . "github" "Use GitHub" true -}}
 {{- $gitlab := promptBoolOnce . "gitlab" "Use GitLab" false -}}
+{{- $albilities := promptBoolOnce . "albilities" "Clone albilities (Claude plugin) to ~/projects" true -}}
 
 # Written once by `chezmoi init` to ~/.config/chezmoi/chezmoi.toml, which is
 # machine-local and never committed. Answers are durable: re-running init does
@@ -8,3 +9,4 @@
 [data]
     github = {{ $github }}
     gitlab = {{ $gitlab }}
+    albilities = {{ $albilities }}

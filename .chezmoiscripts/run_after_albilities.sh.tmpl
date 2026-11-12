@@ -1,0 +1,20 @@
+{{ if .albilities -}}
+#!/bin/sh
+# Clone albilities (the Claude plugin the `c` function loads) if it is missing.
+# Runs on every apply but only acts once; an existing clone is never touched,
+# since it is a working repo.
+#
+# GIT_CONFIG_GLOBAL=/dev/null skips the https->ssh insteadOf rewrite in
+# ~/.gitconfig, so the clone works on a fresh machine before `gitkeys setup`.
+# Pushes still go over SSH: origin stays https and the rewrite applies to it.
+#
+# A failure only warns: `c` falls back to plain claude, and the next apply
+# retries.
+
+dir="$HOME/projects/albilities"
+[ -d "$dir" ] && exit 0
+
+mkdir -p "$HOME/projects"
+GIT_CONFIG_GLOBAL=/dev/null git clone https://github.com/remnestal/albilities.git "$dir" ||
+  echo "albilities: clone failed; c runs plain claude until the next apply" >&2
+{{ end -}}
