@@ -11,10 +11,15 @@ chezmoi source dir.
     exec zsh
     gitkeys setup
 
+    # optional overlay (see Extending), then install its packages
+    git clone git@github.com:<you>/<dotfiles-extension>.git ~/.local/share/dotfiles
+    brew bundle install --global
+
 The order matters, and only in one direction: `chezmoi init` writes ~/.Brewfile
 and the Taskfile, `brew bundle` installs the `go-task` and `gh` they need, and
 `exec zsh` is what puts the `gitkeys` function on your path. Skip the first line
-if brew is already there.
+if brew is already there. The overlay comes last because cloning it needs the
+key `gitkeys setup` registers.
 
 `chezmoi init` asks once whether you use GitHub and/or GitLab, and whether to
 clone [albilities](https://github.com/remnestal/albilities), and stores the
