@@ -2,6 +2,44 @@
 
 autoload -Uz add-zsh-hook
 
+# Named directory: %~ renders ~/projects/foo as ~p/foo, and `cd ~p/foo` works.
+hash -d p="$HOME/projects"
+
+# Dot for whether git can sign: green when id_git is in the agent, yellow when
+# only other keys are, red when none. Twin of agent_color() in the Claude
+# statusline. Checked every prompt because `gitkeys login` sets a TTL.
+# Helpers set REPLY instead of printing, to skip a subshell per call.
+_prompt_agent_dot() {
+  local out line key
+  local -a loaded
+  # ssh-add -L exits 1 and prints "no identities" text when the agent is empty.
+  out=$(ssh-add -L 2>/dev/null) || out=""
+  for line in ${(f)out}; do
+    loaded+=(${${=line}[2]})
+  done
+  [[ -r ~/.ssh/id_git.pub ]] && key=${${=$(<~/.ssh/id_git.pub)}[2]}
+
+  if [[ -n $key ]] && (( ${loaded[(Ie)$key]} )); then
+    REPLY="%F{green}●%f"
+  elif (( $#loaded )); then
+    REPLY="%F{yellow}●%f"
+  else
+    REPLY="%F{red}●%f"
+  fi
+}
+
+# " (branch)", " (@sha)" when detached, or nothing outside a repo.
+# symbolic-ref first: it also works in a fresh repo with no commits.
+_prompt_git() {
+  local ref
+  REPLY=""
+  if ! ref=$(git symbolic-ref --short -q HEAD 2>/dev/null); then
+    ref=$(git rev-parse --short HEAD 2>/dev/null) || return
+    ref="@$ref"
+  fi
+  REPLY=" (%F{magenta}${ref//\%/%%}%f)"
+}
+
 _prompt_preexec() {
   timer=$SECONDS
 }
@@ -10,8 +48,7 @@ _prompt_precmd() {
   local exit_code=$?
   local status_text=""
   local timer_text=""
-  local path="${PWD/#$HOME/~}"
-  local path_color
+  local path_color dot git
 
   # Status + path color
   if (( exit_code == 0 )); then
@@ -43,7 +80,10 @@ _prompt_precmd() {
     timer_text="%F{cyan}--%f"
   fi
 
-  PROMPT="%B${path_color}${path}%f ${status_text}%b "
+  _prompt_agent_dot; dot=$REPLY
+  _prompt_git; git=$REPLY
+
+  PROMPT="${dot} %B${path_color}%~%f%b${git} %B${status_text}%b "
   RPROMPT="(${exit_code}) %B%F{yellow}%D %*%f%b ${timer_text}"
 }
 
