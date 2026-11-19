@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Claude Code status line.
-Left → right: agent dot (id_git loaded green / other key yellow / none red) + pwd (basename) | local HH:MM + UTC offset | model + effort pips (threshold color)
+Left → right: agent dot (id_git loaded green / other key yellow / none red) + pwd (basename)
+              + git branch (⎇ and main repo name in a linked worktree) | local HH:MM + UTC offset
+              | model + effort pips (threshold color)
               | context bar+tokens (blue) | 5h usage % + reset countdown (threshold color)
 """
 import json, os, subprocess, sys
@@ -8,6 +10,7 @@ from datetime import datetime
 
 RESET = "\x1b[0m"; BOLD = "\x1b[1m"; DIM = "\x1b[2m"
 BLUE = "\x1b[34m"; GREEN = "\x1b[32m"; YELLOW = "\x1b[33m"
+MAGENTA = "\x1b[35m"; CYAN = "\x1b[36m"
 ORANGE = "\x1b[38;5;208m"; RED = "\x1b[31m"  # orange needs 256-color (not 8-color ANSI)
 
 FILL, EMPTY, W = "▰", "▱", 10           # slanted rectangle bar
@@ -58,13 +61,46 @@ def agent_color():
         pass
     return YELLOW if loaded else RED
 
+def git(cwd, *args):
+    try:
+        r = subprocess.run(["git", "-C", cwd, *args],
+                           capture_output=True, text=True, timeout=1)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout.strip() if r.returncode == 0 else None
+
+def git_info(cwd):
+    """(main repo name or None, branch, is linked worktree), or None outside a repo.
+
+    In a linked worktree the cwd basename is the worktree dir (Claude's are
+    .claude/worktrees/<id>), so the name comes from the main repo instead.
+    symbolic-ref before rev-parse HEAD: it also works in a repo with no commits.
+    """
+    dirs = git(cwd, "rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir")
+    if not dirs or len(dirs.splitlines()) != 2:
+        return None
+    git_dir, common_dir = dirs.splitlines()
+    branch = git(cwd, "symbolic-ref", "--short", "-q", "HEAD")
+    if not branch:
+        branch = "@" + (git(cwd, "rev-parse", "--short", "HEAD") or "?")
+    worktree = git_dir != common_dir
+    name = os.path.basename(os.path.dirname(common_dir)) if worktree else None
+    return name, branch, worktree
+
 def main():
     data = json.load(sys.stdin)
 
-    # pwd basename, far left (just the current dir name, e.g. "dotfiles")
+    # pwd basename + branch, far left (e.g. "dotfiles main")
     cwd = data.get("cwd") or data.get("workspace", {}).get("current_dir", "")
     name = os.path.basename(cwd.rstrip("/")) or cwd or "?"
-    segs = [f"{agent_color()}●{RESET} {BOLD}{name}{RESET}"]
+    info = git_info(cwd) if cwd else None
+    repo, branch, worktree = info or (None, None, False)
+    seg = f"{agent_color()}●{RESET} {BOLD}{repo or name}{RESET}"
+    if worktree:
+        seg += f" {CYAN}⎇{RESET}"
+    if branch:
+        seg += f" {MAGENTA}{branch}{RESET}"
+    segs = [seg]
 
     # clock + UTC offset (handles fractional offsets like +5:30)
     now = datetime.now().astimezone()
