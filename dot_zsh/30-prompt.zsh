@@ -84,7 +84,7 @@ _prompt_precmd() {
   _prompt_git; git=$REPLY
 
   PROMPT="${dot} %B${path_color}%~%f%b${git} %B${status_text}%b "
-  RPROMPT="%B%F{yellow}%D %*%f%b ${timer_text}"
+  RPROMPT="%F{242}%D %*%f ${timer_text}"
 }
 
 add-zsh-hook preexec _prompt_preexec
