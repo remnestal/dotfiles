@@ -56,7 +56,7 @@ _prompt_precmd() {
     status_text="${path_color}✔%f"
   else
     path_color="%F{red}"
-    status_text="${path_color}✘%f"
+    status_text="${path_color}✘ ${exit_code}%f"
   fi
 
   # Execution time formatting
@@ -84,7 +84,7 @@ _prompt_precmd() {
   _prompt_git; git=$REPLY
 
   PROMPT="${dot} %B${path_color}%~%f%b${git} %B${status_text}%b "
-  RPROMPT="(${exit_code}) %B%F{yellow}%D %*%f%b ${timer_text}"
+  RPROMPT="%B%F{yellow}%D %*%f%b ${timer_text}"
 }
 
 add-zsh-hook preexec _prompt_preexec
